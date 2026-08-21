@@ -1,0 +1,3 @@
+# Direct external links bypass the Gateway security boundary and are rejected.
+# Add only Gateway-local paths such as /apps/example.
+links: []

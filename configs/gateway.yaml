@@ -1,0 +1,66 @@
+listen_host: "127.0.0.1"
+listen_port: 8081
+default_idle_timeout_seconds: 300
+default_startup_timeout_seconds: 25
+recovery_block_requests: true
+health_poll_interval_seconds: 2
+idle_scan_interval_seconds: 10
+runtime_dir: "./runtime"
+log_dir: "./logs"
+event_log_path: "./logs/events.jsonl"
+api_audit_db_path: "./runtime/gateway.sqlite3"
+
+operations:
+  backup_dir: "./runtime/backups/operations"
+  diagnostic_dir: "./runtime/diagnostics"
+  backup_interval_hours: 24
+  backup_retention_count: 14
+  emergency_token_ttl_seconds: 900
+  diagnostic_log_tail_lines: 500
+unhealthy_threshold: 3
+auto_restart_failed_apps: true
+restart_max_attempts: 3
+restart_backoff_seconds: 5
+restart_backoff_max_seconds: 300
+restart_window_seconds: 900
+restart_stable_seconds: 300
+max_log_bytes: 10485760
+log_backup_count: 3
+default_icon: "🧩"
+lease_monitor_interval_seconds: 15
+
+audit:
+  retention_days: 90
+  export_limit: 10000
+  cleanup_interval_seconds: 3600
+
+# Local Mailer owns Microsoft Graph credentials and OAuth tokens. Gateway only
+# invokes this fixed local script and never reads its config or token cache.
+notifications:
+  enabled: true
+  provider: "local_mailer"
+  python_executable: "/usr/bin/python3"
+  command: "/Users/yuanqilu/dev/Local_Mailer/send_mail.py"
+  recipient: "lu.yuanqi.2005@gmail.com"
+  subject_prefix: "[Home Gateway]"
+  cooldown_seconds: 300
+  max_attempts: 5
+  retry_backoff_seconds: 60
+  retention_days: 90
+  send_categories:
+    - "app_failure"
+    - "app_recovery"
+    - "lease_failure"
+    - "lease_recovery"
+    - "tunnel_failure"
+    - "approval_pending"
+    - "test"
+
+tunnel:
+  enabled: true
+  public_url: "https://dev.lu607.com/readyz"
+  interval_seconds: 60
+  timeout_seconds: 10
+  failure_threshold: 3
+  # Only email once when the same outage remains unrecovered for at least one hour.
+  alert_after_seconds: 3600

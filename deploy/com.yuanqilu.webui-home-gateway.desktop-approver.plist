@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>KeepAlive</key>
+	<true/>
+	<key>Label</key>
+	<string>com.yuanqilu.webui-home-gateway.desktop-approver</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>__PROJECT_DIR__/.venv/bin/python</string>
+		<string>__PROJECT_DIR__/scripts/macos_desktop_approver.py</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>StandardErrorPath</key>
+	<string>__PROJECT_DIR__/logs/desktop-approver.stderr.log</string>
+	<key>StandardOutPath</key>
+	<string>__PROJECT_DIR__/logs/desktop-approver.stdout.log</string>
+	<key>ThrottleInterval</key>
+	<integer>10</integer>
+	<key>WorkingDirectory</key>
+	<string>__PROJECT_DIR__</string>
+</dict>
+</plist>

@@ -1,0 +1,80 @@
+app_id: "qbt-cleaner"
+manifest_version: 1
+display_name: "qBittorrent Cleaner"
+icon: "🧹"
+mount_path: "/apps/qbt-cleaner"
+workdir: "/Users/yuanqilu/dev/qbt-cleaner"
+command:
+  - "/Users/yuanqilu/dev/qbt-cleaner/.venv/bin/python"
+  - "-m"
+  - "app.web"
+  - "--host"
+  - "{host}"
+  - "--port"
+  - "{port}"
+  - "--base-path"
+  - "{mount_path}"
+listen_host: "127.0.0.1"
+health_path: "/health"
+allow_auto_stop: true
+idle_timeout_seconds: 1500
+startup_timeout_seconds: 20
+graceful_shutdown_seconds: 8
+lifecycle:
+  start_policy: "on_demand"
+  auto_restart: true
+  restart_max_attempts: 3
+  restart_window_seconds: 900
+  restart_backoff_initial_seconds: 5
+  restart_backoff_max_seconds: 300
+  stable_reset_seconds: 300
+env:
+  WEBUI_MODE: "gateway"
+activity:
+  count_as_user_prefixes:
+    - "/"
+    - "/api/deletes"
+    - "/api/deletes/"
+  ignore_prefixes:
+    - "/api/dashboard"
+    - "/api/runs"
+    - "/api/candidates"
+  streaming_prefixes: []
+  streaming_silence_seconds: 15
+
+api:
+  enabled: true
+  auto_start: false
+  timeout_seconds: 30
+  max_request_body_bytes: 262144
+
+capabilities:
+  - id: "qbt-cleaner.status.read"
+    title: "Read cleaner status"
+    risk: "low"
+    routes:
+      - method: "GET"
+        path_prefix: "/api/dashboard"
+      - method: "GET"
+        path_prefix: "/api/runs"
+      - method: "GET"
+        path_prefix: "/api/candidates"
+
+  - id: "qbt-cleaner.deletion.execute"
+    title: "Execute a deletion plan"
+    risk: "critical"
+    routes:
+      - method: "POST"
+        path_prefix: "/api/deletes"
+      - method: "DELETE"
+        path_prefix: "/api/deletes"
+    grant_policy:
+      privileged:
+        enabled: true
+        max_ttl_seconds: 31536000
+        approval_required: true
+        approval_methods: ["desktop", "totp", "web-admin"]
+    action_policy:
+      per_action_approval: true
+      require_payload_preview: true
+      one_time_token: true

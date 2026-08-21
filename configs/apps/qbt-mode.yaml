@@ -1,0 +1,114 @@
+app_id: "qbt-mode"
+manifest_version: 1
+display_name: "qBittorrent Mode"
+icon: "🎮"
+mount_path: "/apps/qbt-mode"
+workdir: "/Users/yuanqilu/dev/qbt_mode"
+command:
+  - "/Users/yuanqilu/dev/qbt_mode/.venv/bin/python"
+  - "-m"
+  - "app.main"
+  - "--host"
+  - "{host}"
+  - "--port"
+  - "{port}"
+  - "--base-path"
+  - "{mount_path}"
+listen_host: "127.0.0.1"
+health_path: "/health"
+allow_auto_stop: false
+idle_timeout_seconds: 0
+startup_timeout_seconds: 20
+graceful_shutdown_seconds: 8
+lifecycle:
+  start_policy: "on_demand"
+  auto_restart: true
+  restart_max_attempts: 3
+  restart_window_seconds: 900
+  restart_backoff_initial_seconds: 5
+  restart_backoff_max_seconds: 300
+  stable_reset_seconds: 300
+env:
+  WEBUI_MODE: "gateway"
+secret_env:
+  QBT_HOST: "keychain:com.yuanqilu.webui-home-gateway:qbt-host"
+  QBT_USERNAME: "keychain:com.yuanqilu.webui-home-gateway:qbt-username"
+  QBT_PASSWORD: "keychain:com.yuanqilu.webui-home-gateway:qbt-password"
+activity:
+  count_as_user_prefixes:
+    - "/"
+    - "/api/mode/gaming"
+    - "/api/mode/normal"
+  ignore_prefixes:
+    - "/api/status"
+    - "/api/mode/status"
+  streaming_prefixes: []
+  streaming_silence_seconds: 15
+
+# -----------------------------------------------------------------------------
+# External API capability surface
+# -----------------------------------------------------------------------------
+# 普通 capability 声明允许穿透的 qbt-mode 内部 API。
+# gateway_managed capability 只由 Gateway 自己的 lease 状态机执行，不穿透同名上游接口。
+# 没有声明的路径，/api/apps/v1/qbt-mode/... 默认拒绝。
+api:
+  enabled: true
+  auto_start: false
+  timeout_seconds: 15
+
+capabilities:
+  - id: "qbt-mode.mode.read"
+    title: "Read current qBittorrent mode"
+    risk: "low"
+    routes:
+      - method: "GET"
+        path: "/api/mode/status"
+
+  - id: "qbt-mode.mode.set_gaming"
+    title: "Enter gaming mode"
+    risk: "medium"
+    routes:
+      - method: "POST"
+        path: "/api/mode/gaming"
+
+  - id: "qbt-mode.mode.set_normal"
+    title: "Return to normal mode"
+    risk: "medium"
+    routes:
+      - method: "POST"
+        path: "/api/mode/normal"
+
+  - id: "qbt-mode.mode.lease_gaming"
+    title: "Maintain gaming mode with lease"
+    risk: "medium_high"
+    gateway_managed: true
+    routes: []
+    grant_policy:
+      trusted:
+        max_ttl_seconds: 31536000
+        approval_required: true
+        approval_methods: ["web-admin"]
+    lease_policy:
+      resource_key: "qbt-mode.mode"
+      max_lease_seconds: 7200
+      heartbeat_interval_seconds: 30
+      auto_release_on_missed_heartbeat: true
+      activation_grace_seconds: 30
+      reconcile_retry_seconds: 15
+      acquire:
+        method: "POST"
+        path: "/api/mode/gaming"
+        timeout_seconds: 15
+        success_statuses: [200, 204]
+      release:
+        method: "POST"
+        path: "/api/mode/normal"
+        timeout_seconds: 15
+        success_statuses: [200, 204]
+      probe:
+        method: "GET"
+        path: "/api/mode/status"
+        timeout_seconds: 5
+        json_path: "mode"
+        active_values: ["gaming"]
+        released_values: ["normal"]

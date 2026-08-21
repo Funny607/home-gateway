@@ -1,0 +1,81 @@
+app_id: "live-archive"
+manifest_version: 1
+display_name: "Live Archive"
+icon: "📼"
+mount_path: "/apps/live-archive"
+
+app_type: "managed"
+
+workdir: "/Users/yuanqilu/dev/Live_Downloader"
+
+command:
+  - "/usr/bin/env"
+  - "python3"
+  - "-m"
+  - "app.web"
+  - "--host"
+  - "{host}"
+  - "--port"
+  - "{port}"
+  - "--base-path"
+  - "{mount_path}"
+
+listen_host: "127.0.0.1"
+health_path: "/health"
+
+# Gateway 只管理 WebUI，不管理 bililive-go 录制 worker。
+# 录制 worker 请用 launchd、screen/tmux 或 start_live_archive.command 独立运行。
+allow_auto_stop: true
+idle_timeout_seconds: 900
+startup_timeout_seconds: 20
+graceful_shutdown_seconds: 8
+lifecycle:
+  start_policy: "on_demand"
+  auto_restart: true
+  restart_max_attempts: 3
+  restart_window_seconds: 900
+  restart_backoff_initial_seconds: 5
+  restart_backoff_max_seconds: 300
+  stable_reset_seconds: 300
+
+proxy:
+  max_request_body_bytes: 1073741824
+  memory_spool_bytes: 1048576
+  connect_timeout_seconds: 10
+  request_timeout_seconds: 900
+  streaming_read_timeout_seconds: 0
+
+env:
+  LIVE_ARCHIVE_ENV: "production"
+
+activity:
+  count_as_user_prefixes:
+    - "/"
+    - "/api/file"
+    - "/api/build-config"
+    - "/api/test-email"
+    - "/api/recording"
+    - "/api/download"
+  ignore_prefixes:
+    - "/api/state"
+    - "/api/calendar"
+  streaming_prefixes: []
+  streaming_silence_seconds: 15
+
+dashboard:
+  visible_roles:
+    - "admin"
+  allow_open_roles:
+    - "admin"
+  allow_detail_roles:
+    - "admin"
+  allow_proxy_roles:
+    - "admin"
+
+actions:
+  show_open: true
+  show_detail: true
+  show_start: true
+  show_stop: true
+  show_restart: true
+  show_retry: true

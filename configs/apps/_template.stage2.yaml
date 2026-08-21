@@ -1,0 +1,68 @@
+# Files beginning with "_" are examples and are not loaded.
+manifest_version: 1
+app_id: "example-app"
+display_name: "Example App"
+mount_path: "/apps/example-app"
+workdir: "/Users/yuanqilu/dev/example-app"
+command:
+  - "/Users/yuanqilu/dev/example-app/.venv/bin/python"
+  - "-m"
+  - "app.main"
+  - "--host"
+  - "{host}"
+  - "--port"
+  - "{port}"
+listen_host: "127.0.0.1"
+health_path: "/health"
+
+lifecycle:
+  start_policy: "on_demand" # always | on_demand | manual
+  auto_restart: true
+  restart_max_attempts: 3
+  restart_window_seconds: 900
+  restart_backoff_initial_seconds: 5
+  restart_backoff_max_seconds: 300
+  stable_reset_seconds: 300
+  dependencies: []
+  maintenance_windows: []
+
+proxy:
+  max_request_body_bytes: 268435456
+  memory_spool_bytes: 1048576
+  connect_timeout_seconds: 10
+  request_timeout_seconds: 300
+  streaming_read_timeout_seconds: 0
+  websocket:
+    enabled: false
+    path_prefixes: []
+
+api:
+  enabled: true
+  auto_start: false
+  timeout_seconds: 15
+  max_request_body_bytes: 2097152
+
+capabilities:
+  - id: "example-app.status.read"
+    title: "Read status"
+    risk: "low"
+    routes:
+      - method: "GET"
+        path: "/api/status"
+
+# A generic Lease capability uses this shape:
+#  - id: "example-app.mode.lease"
+#    title: "Maintain temporary mode"
+#    risk: "medium_high"
+#    gateway_managed: true
+#    lease_policy:
+#      resource_key: "example-app.mode"
+#      max_lease_seconds: 7200
+#      heartbeat_interval_seconds: 30
+#      acquire: {method: "POST", path: "/api/mode/active"}
+#      release: {method: "POST", path: "/api/mode/normal"}
+#      probe:
+#        path: "/api/mode/status"
+#        json_path: "mode"
+#        active_values: ["active"]
+#        released_values: ["normal"]

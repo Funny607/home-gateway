@@ -1,0 +1,37 @@
+# Secrets are stored in macOS Keychain by deploy/setup_secrets.py.
+session_secret_ref: "keychain:com.yuanqilu.webui-home-gateway:session-secret"
+database_pepper_ref: "keychain:com.yuanqilu.webui-home-gateway:database-pepper"
+desktop_approver_secret_ref: "keychain:com.yuanqilu.webui-home-gateway:desktop-approver-secret"
+breakglass_secret_ref: "keychain:com.yuanqilu.webui-home-gateway:breakglass-secret"
+# Run scripts/configure_totp.py, then uncomment the next line.
+# totp_secret_ref: "keychain:com.yuanqilu.webui-home-gateway:totp-secret"
+totp_issuer: "Home Gateway"
+totp_account: "607"
+session_max_age_seconds: 28800
+secure_cookies: true
+same_site: "strict"
+
+allowed_hosts:
+  - "127.0.0.1"
+  - "localhost"
+  - "dev.lu607.com"
+
+trusted_origins:
+  - "http://127.0.0.1:8081"
+  - "http://localhost:8081"
+  - "https://dev.lu607.com"
+
+login_attempts: 5
+login_window_seconds: 300
+login_block_seconds: 900
+public_api_attempts: 30
+public_api_window_seconds: 60
+
+users:
+  - username: "607"
+    password_hash_ref: "keychain:com.yuanqilu.webui-home-gateway:admin-password-hash"
+    role: "admin"
+
+  - username: "guest"
+    password_hash_ref: "keychain:com.yuanqilu.webui-home-gateway:guest-password-hash"
+    role: "guest"

@@ -1,0 +1,12 @@
+别人十几岁在发朋友圈，谈恋爱，而我在调试权限中间件：未登录的请求，只配收到一句语录，就很...你们懂吧😭
+别人十几岁在逛商场，点奶茶，而我在看后端日志：command blocked by auth guard，就很...你们懂吧😭
+别人十几岁在熬夜聊天，互道晚安，而我在写访问控制：按钮可以亮，命令不能响，就很...你们懂吧😭
+别人十几岁在研究穿搭，拍照修图，而我在 debug 一个未授权 POST 请求，就很...你们懂吧😭
+别人十几岁在等消息，而我在等一个 401 返回：未登录者，不得触碰控制权，就很...你们懂吧😭
+别人十几岁在看电影，吃爆米花，而我在给每个危险接口加判断：没 session，就别谈执行，就很...你们懂吧😭
+INFO:     127.0.0.1:54698 - "POST /apps/qbt-mode/start HTTP/1.1" 200 OK  # visitor mode: command skipped, quote returned
+ERROR:    Exception in ASGI application: UnauthorizedControlError: visitor tried to touch the process, but auth guard touched him first
+Traceback (most recent call last): File "gateway/auth.py", line 401, in require_admin raise PermissionDenied("未登录者，不得执行真实命令")
+INFO:     127.0.0.1:54712 - "POST /login HTTP/1.1" 500 Internal Server Error  # 嘉豪正在编译自己的权限感
+WARNING:  command blocked by auth guard: button_clicked=True real_command_sent=False loneliness_level=DEBUG
+ERROR:    PermissionDenied: 别人十几岁在等消息，而我在等一个 401 返回，就很...你们懂吧😭
